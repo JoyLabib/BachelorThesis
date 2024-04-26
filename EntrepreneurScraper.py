@@ -37,7 +37,6 @@ for x in range(1,11):
         date = authorDate.split('\n')[7].strip()
         #print(date)
 
-        x = x+1
         text = singleArticle.find('div', class_= 'first-letter:float-left')
         if type(text) is type(None):
             text = singleArticle.find('article', class_= 'max-w-3xl').text
@@ -56,5 +55,5 @@ for x in range(1,11):
         print(x, 'added article')
 
 df = pd.DataFrame(articleList)
-df.to_csv('Entrepreneur.com.csv')
+df.to_csv('Entrepreneur1.com.csv')
 print(x, 'saved to csv')
