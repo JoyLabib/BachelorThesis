@@ -1,0 +1,363 @@
+\chapter{Methodology}
+\label{chap:method}
+Engineering a data benchmark has been always a confusing challenge to achieve due to the fact of multiple pipelines to be followed and the different structures of the data. The aim of the thesis is to engineer a data benchmark of textual posts, written by entrepreneurs in different industries. For the purpose of this paper, an entrepreneur is a person who founded a completely independent company, whether on his own or having a co-founder, most importantly, he is working for himself. The benchmark will be a useful tool for the analysis of the entrepreneurial personalities among our communities, through the prediction of the machine learning models. This prediction will be a great asset on the personal level of the person to be an entrepreneur and be validated to have the entrepreneurial characteristics as mentioned before. Though, this prediction is crucially important for the companies looking for the right person with an independent mindset that will help the company reach a new limit for its target, which will indirectly have an impact on the country's economy.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{datalifecycle}
+\caption{Data Engineering Pipeline \cite{Redpanda}}
+\label{fig:DataPipelineArchitecture}
+\end{figure}
+
+Building a dataset requires to follow a particular process as shown in figure~\ref{fig:DataPipelineArchitecture} from the two different processes \ac{etl}, \ac{elt}, and figure~\ref{fig:etlVselt} illustrates the difference between the two processes. The one used in this thesis is the \ac{elt}, extracting the relevant information needed and transform this data through cleaning and labeling to be more relevant to the thesis' aim. And finally, to validate this data and load it and make it accessible for those who will need it. This chapter includes the different phases followed and the methodology to achieve results in my bachelor thesis. It is divided into 5 main categories: The Data Collection, The Data Transformation, The Textual Features Extraction, The Data Labeling, The Data Validation, and lastly, The Deployment of the data.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{etlVSelt}
+\caption{Difference between \ac{etl} and \ac{elt} \cite{Leong_2023}}
+\label{fig:etlVselt}
+\end{figure}
+
+\section{The Data Collection}
+The data collection phase is divided into three main parts, according the pipeline followed in this thesis. A research was done to investigate the possible sources of the textual data by entrepreneurs. Afterwards, specifying all the entrepreneurs which will use their texts as the main source of our data, and lastly extracting these texts using various tools.
+
+\subsection{The sources of data}
+In contemporary times, anyone can write whatever comes their mind on whichever platforms they prefer on the Internet and publish it to reach the biggest audience. Unfortunately, not all platforms are trustworthy of the published texts and can give multiple false data to the researchers. The investigation of the sources of data phase is a very crucial step to maintain a high quality and comprehensive dataset.
+
+While exploring the different platforms on the Internet that offers people to post their writing and express their opinions for specific topics or for the humanly right for freedom, an important consideration was maintained is to find sources that offers two types of textual posts for our entrepreneurs. The first type focused on the use of the free speech of the entrepreneurs through their social media accounts and the conducted interviews done to discuss their daily lifestyle and their companies establishment journey. The second type focused on the formal use of language through typed articles and blog posts, where entrepreneurs share some advice, lessons learned through their journey to success, and their thoughts on specific topics regarding the industry of their business, or on the general business insights. Having both types of written data is a major key for the entrepreneurial personality analysis, since humans always use the two types on a daily basis, and both types reflect the author's personality characteristics.
+
+After conducting a research on which platforms entrepreneurs usually use to express themselves, several sources and websites \cite{obschonka2017using},  were found to publish entrepreneurs' written contributions. For the free speech textual data type, three main sources were used:
+
+\begin{enumerate}
+\item \textbf{X (previously Twitter)}: It is a free social networking site \cite{kwak2010twitter} where users broadcast short posts known as tweets. These tweets can contain text, videos, photos or links. Twitter is known to be the platform where entrepreneurs can build and market for their brand, engage with customers, network with industry professionals, and most importantly stay updated on trends.
+
+\item \textbf{LinkedIn}: It is the world's largest professional network on the internet. It is used to find the right job, connect and strengthen professional relationships, and learn the skills needed to succeed in a career. Entrepreneurs use it as a networking, personal branding, content marketing, industry insights, and partnership opportunities \cite{reed2018linkedin}, \cite{ioanid2015managers}.
+
+\item \textbf{Mixergy}\footnote{\url{https://mixergy.com/}}: Founded by Andrew Warner in 2006, Mixergy offers a variety of content formats, including courses, podcasts, and an extensive library of interviews with founders, CEOs, and other influential figures in the business world.
+\end{enumerate}
+
+Furthermore, the formal well-structured posts from entrepreneurs were drawn out from these four sources:
+\begin{enumerate}
+\item \textbf{The Entrepreneurs Library}\footnote{\url{https://www.theelpodcast.com/}}: It is a podcast, blog, and community for Business proprietors and individuals engaged in small-scale enterprise who loves to read books.
+\item \textbf{Entrepreneur Media}\footnote{\url{https://www.entrepreneur.com/}}: It is a multimedia company that provides content, resources, and support for entrepreneurs and small business owners.
+\item \textbf{StartupNation}\footnote{\url{https://startupnation.com/}}: Founded by Jeff Sloan, a multimedia company crafted by entrepreneurs for entrepreneurs, offering necessary insights for personal growth.
+\item \textbf{Seth's Blog\footnote{\url{https://seths.blog/}}}: The personal blog of Seth Godin, he is a prominent figure in the fields of marketing, entrepreneurship, and leadership.
+\end{enumerate}
+
+After an exhaustive research on the sources of texts that will be used for the dataset. We gather all the websites \ac{url}(s) in a Google Sheet, with all the sub-pages that will be accessed to collect the data, too. Putting all the \ac{url}(s) in a data sheet will ease our automation process of transforming the rows of the sheet to a list, separated with commas, which will be used to loop on the list and access the content of each webpage. For example, we created two sheets, one for the list of all entrepreneurs we will extract their LinkedIn posts or their tweets from X (known as Twitter). The other sheet has all the specific webpages of a given website that will be accessed individually with the format of its pagination.
+
+\subsection{Web Scraping}
+Web scraping \cite{khder2021web} is a technique used to extract data from websites. As shown in figure~\ref{fig: webscraping} It involves automated processes that navigate through web pages, gather information, and store it for analysis or other purposes. When applied to a list of web pages, web scraping can efficiently collect all the needed data across multiple sites. By writing scripts or using specialized software, users can specify the data they want to extract, such as text, images, or links, and define the pages to scrape. This method is particularly useful for tasks like market research, competitive analysis, and data aggregation, as it allows users to gather large amounts of information quickly and systematically. Additionally, web scraping can be customized to extract structured data from unstructured sources, making it a powerful tool for extracting insights from the vast expanse of the internet.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=12cm]{webScrapeProcess}
+\caption{Web Scraping Process \cite{khder2021web}}
+\label{fig: webscraping}
+\end{figure}
+
+For each website in our sources, a Python Jupyter Notebook was created using its relative Python packages to extract the data as mentioned in table~\ref{tab:pythonLibraries}. The choice of these libraries depended on the source and the way we want to deal with it to be able to extract all data. For Twitter, it was straight forward to use \textit{Nitter Scraper} since it is an open-source alternative for Twitter where the tweets of a user are seen and iterated through each page without any authentication. For LinkedIn, it wasn't the same easy case like Twitter, we used a webdriver to control the webpage with our code to natigate through the pages and buttons and get the results we want. And finally, for all the other websites, we used requests to access the \ac{url} and get their \ac{html} page source.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+        Source & Python libraries\\ \hline
+        Twitter & Nitter Scraper (ntscraper), Pandas \\
+        LinkedIn & Selenium, BeautifulSoup, Pandas \\
+        Other & Requests, BeautifulSoup \\ \hline
+    \end{tabular}
+    \caption{Sources and their respective Python Libraries}
+    \label{tab:pythonLibraries}
+\end{table}
+
+Starting of with Twitter, figure~\ref{fig:twitter} below shows the simple python function used to extract all the tweets of a given username to the function responsible for fetching all the data. Along with specifying the fields necessary to form the meta data about our tweet as mentioned in the figure, we construct a dataframe to gather all data and structure it in a tabular form.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{twitter}
+\caption{Twitter Scraping function using Nitter}
+\label{fig:twitter}
+\end{figure}
+
+Moving on to LinkedIn, the process of posts extraction is done through two main libraries, Selenium is a powerful tool for automating web browsers. It allowed us to interact with LinkedIn in the same way a user would, and BeautifulSoup to parse the \ac{html} and \ac{xml} documents to extract HTML elements as demonstrated in figure~\ref{fig:linkedin}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=14cm]{LinkedIn}
+\caption{LinkedIn Scraping Process}
+\label{fig:linkedin}
+\end{figure}
+
+At last, all the other sources only needed a great depth inspection to the \ac{html} page source to be able to get all the \ac{html} elements we are interested in, along with their class names, and a unique identifier to collect all the instances of the wanted elements in a page.
+
+\section{The Data Transformation}
+Data Transformation is our next step in the data analysis process, aimed at improving the quality and reliability of datasets. It involves integrating the different \ac{csv} files together, to come with one file, and begin the cleaning phase with all its modifications and replacemets within the data to reach a well-balanced and structured dataset.
+
+\subsection{Data Integration}
+A dataset has to have one structure for all the derived data from the different sources, that by default has different field names for our records. First of all, we defined a clear structure and the name of fields and its type which we want to appear in the final version of the data benchmark. Afterwards, we order and name all the \ac{csv} file headers with the same name specified earlier. Then, we add a column for each source's \ac{csv} file with the name of the source that the data was collected from to ensure that while cleaning the data, it would be easier to filter the sources and do a true inspection of the data. And the last step, we will gather all the files in one Excel Sheet with all the data from the various sources. The last step is very important, since transforming and cleaning the data phase should be done once for all the data. Skipping this step will require doing the data cleaning on each \ac{csv} file produced from each source, each is very time consuming to do.
+
+\subsection{Data Cleaning}
+Data cleaning is a critical prerequisite for any meaningful data analysis and plays a fundamental role in ensuring the reliability and validity of findings in various fields. It involves identifying and correcting errors, inconsistencies, and inaccuracies within the data to ensure its integrity and usefulness for analysis. By conducting thorough data cleaning, analysts can avoid the risk of drawing incorrect conclusions or making flawed decisions based on flawed data. The data cleaning steps starts with an inspection of all the possible errors existing, then the actual cleaning.
+\subsubsection{Inspection}
+The inspection of data involves detecting the presence of any errors within the \ac{csv} file, which is done using Microsoft Excel automatically. The error can be a result of a non-consistent record value with the auto-generated type of the column by Excel. It draws our attention to any issues in the actual data before starting the cleaning process.
+
+\subsubsection{Cleaning}
+This step targets specifically the textual post, not the meta data and the other columns we have in the dataset. It includes a number of modifications to be done on the whole dataset as well as on the text, which will make it more readable and relevant to our dataset definition. These modifications are done through Microsoft Excel and Python libraries as Pandas and NumPy, and they are:
+\begin{enumerate}
+\item \textbf{Missing Data Handling}\\
+Missing values are data points that are absent for a specific variable in a dataset. They can be represented in various ways, such as blank cells, null values, or special symbols like "NA" or "unknown". There are a lot of strategies for missing values, like simply removing the whole row with a missing value, by imputation methods or by the forward or backward filling. We will use the mean imputation method to avoid reducing the sample size or losing the accuracy of the data and introducing certain bias. We filter the texts of the same author and get the mean of any numerical missing values to get the missing one. The figure~\ref{fig:meanImputation} shows an example of doing such a technique with is done with the following formula: 
+\[ Mean Value = \frac{\sum_{i=1}^n P_i}{n} \]
+where \( P_i \) is the value of an i cell and n is the total number of values.\\
+For the textual posts from the sources that hadn't any numerical meta data, we inserted a default value "N/A", to specify that these texts didn't have a count for readers' reactions.
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{meanImputation}
+\caption{Example of mean imputation on the likes column}
+\label{fig:meanImputation}
+\end{figure}
+
+\item \textbf{Duplicates Removal}\\
+It is very possible to have a lot of duplicate rows in any dataset, even if is collected through an automated process. Removing duplicates from a dataset ensures data integrity and quality, optimizing storage, and facilitating more accurate analyses. This process enhances overall efficiency and reliability in data management and analysis. Microsoft Excel has a function that can be called on any number of rows and it automatically removes duplicates in our data. The duplicates removal was done based on the textual post only, not any other field, as it has to be the only unique value, at least within all the texts of the same author. As illustrated in figure~\ref{fig:duplicate}, the cells with the same color represents the same content, so we removed the same color cells for each author.
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{duplicates}
+\caption{Example of Removing Duplicate Posts}
+\label{fig:duplicate}
+\end{figure}
+
+\item \textbf{Irrelevant Data Removal}\\
+For the entrepreneurial personality analysis, it is very important to have some criteria on the text, to be able to reach validated insights on the data. After a deeper looking into the length of the text that could be analyzed, we came to a conclusion that any text cell value having a number of characters less than 35 characters, the whole row shall be removed. This will be done with Microsoft Excel after adding a column for the length of each text record and removing the rows that applies. 
+
+\item \textbf{Data Type Conversion}\\
+Microsoft Excel has an auto-detection of the data type in a column based on the type of the majority of the value. Normally, it directly assigns the type Number to any numerical value, and a string to any textual value. When, it comes to dates, it has only some acceptable formats to write a date, and all the values on a column should hold the same date format, so it is a crucial step to insure that all the dates are written in the same way as depicted in figure~\ref{fig:dateConversion}.
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{dateConversion}
+\caption{Example of Date Format Conversion}
+\label{fig:dateConversion}
+\end{figure}
+
+\item \textbf{Language Translation}\\
+To have consistent data, we need to have everything in the same language, because the \ac{nlp} models that analyzes the data are monolingual, they don't process multiple languages at once. We choose English to be our main language. As their are entrepreneurs all around the world, so their was some posts written in Indian and Spanish and other languages. So the languages that we were able to translate to English, we definitely did and for those who we couldn't we had to remove these records.
+
+\item \textbf{Replacing Emojis and Special Characters}\\
+Since our data has a lot of free speech textual posts like tweets. Emojis frequently appear in tweets, adding expressive elements to messages and enhancing communication on social media platforms. Unfortunately, emojis can produce unreliable data analysis, and we can't just remove them because nowadays, people tend to express their feelings using emojis since it is easier. Using Demoji library from Python, emojis will be replaced by their textual meeting as illustrated in figure~\ref{fig:emojis} to keep what the entrepreneur really intended to tweet and helps us analyze better their personality characteristics.
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{emojis}
+\caption{Example of Emoji Replacement\cite{SarahDev_2023}}
+\label{fig:emojis}
+\end{figure}
+\end{enumerate}
+
+Minimal cleaning was done on the textual posts, we avoided modifying the text or any specific pre-processing data method to ensure that the text remains in its original format with all the punctuation and the capitalization. The original form will be more useful in the data analysis and the feature engineering of the text that will be later used in the author's personality analysis.
+
+\section{Textual Features Extraction}
+Textual features encompass various attributes and characteristics present within written content, serving as key elements for analysis and interpretation. Figure~\ref{fig:features} illustrates the two main branches of the textual features, and we extracted some of the elements of both\cite{litvinova2016profiling}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{features}
+\caption{Text Analysis}
+\label{fig:features}
+\end{figure}
+
+\subsection{Content-based Features}
+In \ac{nlp}, feature extraction \cite{tabassum2020survey} is a fundamental task that involves converting raw text data into a format that can be easily processed by machine learning algorithms. There are various techniques available for feature extraction in \ac{nlp}, each with its own strengths and weaknesses. There are multiple available techniques and each has a different use case as demonstrated in table~\ref{tab:featuresExtraction}. After studying each use case for the mentioned techniques, we will be applying the CountVectorizer technique, which will provide us with enough information on the most used words in each text or in the whole \ac{csv}. This technique will be applied using Python, as captured in figure~\ref{fig:CountVectorizer}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{CountVectorizer}
+\caption{Example of CountVectorizer with Python\cite{Eskandar_2023}}
+\label{fig:CountVectorizer}
+\end{figure}
+
+The application of CountVectorizer in our case, is to have the words with the biggest number of occurrences within a text. Therefore, the returned words will help to better understand the most used words by entrepreneurs.
+
+\begin{table}[H]
+\caption{Comparison of Text Feature Extraction Techniques\cite{Eskandar_2023}}
+\label{tab:featuresExtraction}
+\begin{tabular}{m{7em}m{10em}m{7em}m{12em}}
+\hline
+\textbf{Technique} &
+  \textbf{Main Features} &
+  \textbf{Use Cases} &
+  \textbf{Size and Complexity} \\ \hline
+CountVectorizer &
+  Converts text to Matrix of word count &
+  {\color[HTML]{111B21} Text classification, topic modeling} &
+  Simple and fast, suitable for small to medium-sized datasets \\ \hline
+TF-IDF &
+  {\color[HTML]{111B21} Assigns weights towards based on importance} &
+  {\color[HTML]{111B21} Information retrieval, text classification} &
+  {\color[HTML]{111B21} More complex and computationally expensive suitable for medium to large-sized datasets} \\ \hline
+Word embeddings &
+  Vector representation of words based on semantics and syntax &
+  {\color[HTML]{111B21} Text classification, information retrieval} &
+  Can handle large datasets computationally expensive to train \\ \hline
+Bag of  Words &
+  Represents text as a vector of  word frequencies &
+  Text classification, sentiment analysis &
+  Simple and fast suitable for small to medium-sized datasets \\ \hline
+Bag of n-grams &
+  Captures frequency of sequences of n words &
+  Text classification, sentiment analysis &
+  It depends on the size of the n-grams and the datasets \\ \hline
+Hashing Vectorizer &
+  Maps words to fixed-size features space using hashing function &
+  Large scale text classification, online learning &
+  Suitable for large datasets memory efficient May suffered from hash collisions \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Style-based Features}
+The style-based features of a text focus on linguistic attributes such as tone, writing style, frequency of use of punctuation, and in case of the tweets, the number of hashtags and emojis. The following list shows all the features we derived from the textual posts, that will be used in the later section:
+\begin{enumerate}
+\item \textit{Use of Pronouns:} \\
+The conversational tone was measured with the frequency of occurrences of specific pronouns and its instances as listed in table~\ref{tab:pronouns}. This feature will be extracted through Python by specifying the pronouns as a dictionary and searching through the CountVectorizer result, we will get the actual frequency.
+
+\begin{table}[H]
+\centering
+\caption{Pronouns for Tone Analysis}
+\label{tab:pronouns}
+\begin{tabular}{cccc}
+\hline
+\textbf{Nominative} &
+  \textbf{Objective} &
+  \textbf{First Possessive} &
+  \textbf{Second Possessive} \\ \hline
+I & Me & My & Mine \\ \hline
+You & You & Your & Yours \\ \hline
+He & Him & His & His \\ \hline
+She & Her & Her & Hers \\ \hline
+We & Us & Our & Ours \\ \hline
+They & Them & Their & Theirs \\ \hline
+\end{tabular}
+\end{table}
+
+\item \textit{The average word length:}\\
+The length of a word tends to determine the tone of the author. As shorter words tends to be punchier and harder, in opposition to longer words that give a softer effect \cite{Baxter-Read_Baxter-Read_2023}. So it will be beneficial to calculate the average word length used in the text through Python.
+
+\item \textit{The average sentence length:}\\
+Same as for the word length, the length of a sentence decides the tempo of the long text. Shorter sentences, less than or equals to 10 words give a concise style. While longer ones can be a little confusing.
+
+\item \textit{The text length by word count and sentence count:}\\
+Text length can significantly impact communication effectiveness by influencing readability and comprehension. It balances conveying sufficient information without overwhelming the reader. We used Python to count the number of words and number of sentences in the text.
+
+\item \textit{Polarity:}\\
+The polarity score is calculated to assess whether the overall text leans towards being positive or negative.
+The positive and negative score in calculated based on a positive or negative dictionary that when a word is found the score increase in either side. Table~\ref{tab:negativePositive} shows an example of the negative and positive dictionary. The formula used to compute the polarity score is as follows, illustrated in figure~\ref{fig:subjective}: 
+\[ Polarity Score = \frac{Positive Score - Negative Score}{Positive Score + Negative Score + 0.000001} \]
+
+\begin{table}[H]
+\centering
+\caption{Example of Positive and Negative Dictionary\cite{Mining2017Media}}
+\label{tab:negativePositive}
+\begin{tabular}{ccc}
+\hline
+\textbf{Serial No.} &
+  \textbf{Positive words} &
+  \textbf{Negative words} \\ \hline
+1 & Amazing & Avoid \\ \hline
+2 & Authentic & Mistakes \\ \hline
+3 & Best & Bad \\ \hline
+4 & Benefits & Complicated \\ \hline
+5 & Better & Error \\ \hline
+6 & Great & Fail \\ \hline
+7 & Happy & Sad \\ \hline
+8 & Inspiring & Unhappy \\ \hline
+9 & Productive \\ \hline
+10 & Thankful
+\end{tabular}
+\end{table}
+
+\item \textit{Subjectivity:}\\
+The subjective score is used to assess the level of subjectivity or opinion expressed in a text. Figure~\ref{fig:subjective} illustrates the relationship between the polarity and the subjectivity of a text. It is calculated using the formula:
+\[ Subjective Score = \frac{Positive Score + Negative Score}{Total Words after cleaning + 0.000001} \]
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=8cm]{Subjective}
+\caption{The relationship between Polarity and Subjectivity \cite{Ghani2018}}
+\label{fig:subjective}
+\end{figure}
+
+\item \textit{Complex Word Count:}\\
+The complex word count refers to the number of words in the text that have more than two syllables \cite{Celestial_2023}.Using Python's library \textit{cmudict}, we will build a function that counts the syllables of a word and then check if the word in complex and finally, return the complex words count.
+
+\item \textit{Use of Punctuation:}\\
+Punctuation is essential in writing because it helps to convey meaning and clarify the structure of sentences. Without punctuation, sentences can become confusing or ambiguous, making it harder for readers to understand the intended message. Punctuation marks as demonstrated in figure~\ref{fig:punctuation}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm]{punctuation1}
+\caption{The punctuation count in a sentence with Python}
+\label{fig:punctuation}
+\end{figure}
+
+\item \textit{Uppercase and Lowercase words:}\\
+Identifying the frequency of the using Uppercase words in opposition to the lowercase words. We will extract two values, one for the whole uppercase words and one for only the words having their first letter an uppercase. And, same goes for the lowercase words.
+\end{enumerate}
+
+\section{The Data Labeling}
+Data labeling is the process of adding tags or labels to raw data, in our case, the raw data will be the textual posts or tweets of entrepreneurs. Since, the aim of this thesis in to analyze the entrepreneurial personality through verbal behaviour, data labeling will help to come up with conclusions on how entrepreneurs write. And, for future work we wish to be make the prediction if a given textual input has the entrepreneurial personality or not, the labels would represent an object class to help Machine Learning models learn to recognize specific classes within the data without labels.
+
+Using all the extracted features mentioned in the previous section, a column will be made for each feature with the header as the feature name and the value or score it got on this feature. As demonstrated in figure~\ref{fig:labeling} we added to the rows additional information regarding their features.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{labeling}
+\caption{Example of data labeling}
+\label{fig:labeling}
+\end{figure}
+
+Since, the focus of the thesis is about the characteristics of the entrepreneurial personality and this is the first dataset of entrepreneurs' writings, we focus on the \ac{liwc} features more than labeling the dataset with the personality traits of the text. To have a ready dataset as input for the Machine Learning prediction models, we aspire to have a labeled dataset with the Big Five Personality variables or \ac{mbti} variations, to better understand the different aspects of the entrepreneurial personality. Unfortunately, this aspiration is not possible at the moment, since only two state-of-the-art models, the \ac{liwc} and the IBM Watson Personality Insights, offer this feature to extract the personality traits from text. And, these two models have a very limited free access. This task can be done as a new labeled version of this dataset with the traits in the future.
+
+\section{The Data Validation}
+To ensure that data is accurate, complete, and consistent, data validation is the necessary process for this step. It involves checking data for errors, inconsistencies, and anomalies to maintain data quality and reliability. This process is crucial, especially when dealing with large datasets, as errors can propagate quickly and impact downstream analyses or decisions.
+
+Data can be examined as part of a validation process in a variety of ways, including data type, constraint, structured, consistency and code validation. Each type of data validation is designed to make sure the textual posts meet the requirements to be useful for analysis.
+
+Among the most basic and common ways that data is used is within a spreadsheet program such as Microsoft Excel or Google Sheets. In both Excel and Sheets, the data validation process is a straightforward, integrated feature. Excel and Sheets both have a menu item listed as Data > Data Validation. By selecting the Data Validation menu, a user can choose the specific data type or constraint validation required for a given file or data range.
+
+Figure~\ref{fig:validation} illustrates the automatic process of data validation that is done. The types of data validation we did on our dataset:
+\begin{itemize}
+\item \textbf{Data type validation:}\\ It confirms that the data in each field or column matches a specified data type and format.
+\item \textbf{Constraint validation:}\\
+It checks to see if a given data field input fits a specified requirement within certain ranges. For example, it verifies that a textual post field has the minimum number of characters.
+\item \textbf{Structured validation:}\\
+It ensures that the data is compliant with the specified data schema we set at the data transformation phase.
+\item \textbf{Consistency validation:}\\
+It makes sure data styles are consistent. For example, it confirms that all values of the feature extraction scores are listed to two decimal points.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{validation}
+\caption{Data validation process stages\cite{okeowo2018investigating}}
+\label{fig:validation}
+\end{figure}
+
+The output of any given system can only be as good as the data the operation is based on. These operations can include machine learning or artificial intelligence models, data analytic reports and business intelligence dashboards. These reports and data visualization can be a great asset in validating the data and discover any outliers in the columns.
+
+\section{Data Visualization}
+Data visualization is the visual presentation of data or information. The goal of data visualization is to communicate data or information clearly and effectively to readers. The field of data visualization combines both art and data science. While a data visualization can be creative and pleasing to look at, it should also be functional in its visual communication of the data.
+
+Data visualization can be used for:
+\begin{itemize}
+\item Making data engaging and easily digestible
+\item Identifying trends and outliers within a set of data, as mentioned before in the data validation phase
+\item Telling a story found within the data
+\item Highlighting the important parts of a set of data
+\end{itemize}
+
+Data can be represented in a lot of forms, but most importantly, is the choice of the form and how it serves our use case and the data type we want to visualize. Figure~\ref{fig:charts}shows some of these forms in a very artistic way.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15cm]{charts}
+\caption{Data Visualization\cite{Sdhglobal_2023}}
+\label{fig:charts}
+\end{figure}
